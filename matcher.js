@@ -1,11 +1,17 @@
 var pattern = {
 	RE_EXTRACT : /\/?((\{(\w*)\})|\/?(\[(.*)\])|(\w+))(\s*\|\s*(\S*))?/,
 	init : function(str, config){
+		this.definition = str
 		this.delimiter = config.delimiter || '/'
 		this.analyzed = this.analyze(str)
 
 		var delimiter = this.escape(this.delimiter)
 		var analyzed = this.analyzed
+
+		if (analyzed.empty) {
+			this.regex = new RegExp(delimiter + '?[^' + delimiter + ']{0}$')
+			return this
+		}
 
 		var anchors = []
 		var regex_str = analyzed.map(function(part){
@@ -14,19 +20,17 @@ var pattern = {
 		})
 
 		if (regex_str.indexOf(null) > -1) return null
+		else this.regex = new RegExp(regex_str.join(''))
 
-		this.definition = str
-		this.regex = new RegExp(regex_str.join(''))
-
-		console.log(this)
 		return this
 	},
 
 	analyze : function(str){
 		var self = this
-		var parts = str.match(new RegExp('[^' + this.delimiter + ']+', 'g'))
+		var parts = str.match(new RegExp('[^' + this.escape(this.delimiter) + ']+', 'g'))
 		var idents = []
 
+		if (!parts) return {empty : true}
 		return parts.map(function(part){
 			var extracted = self.RE_EXTRACT.exec(part)
 

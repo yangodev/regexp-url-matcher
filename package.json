@@ -1,6 +1,6 @@
 {
   "name": "regexp-url-matcher",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Utility to match and reverse routes with RegExps.",
   "main": "./matcher.js",
   "scripts": {
