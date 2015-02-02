@@ -1,0 +1,27 @@
+{
+  "name": "regexp-url-matcher",
+  "version": "0.0.1",
+  "description": "Utility to match routes with RegExps.",
+  "main": "matcher.js",
+  "scripts": {
+    "test": "node ./test.matcher.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yangodev/regexp-url-matcher.git"
+  },
+  "keywords": [
+    "utility",
+    "url",
+    "match",
+    "reverse",
+    "url",
+    "pattern"
+  ],
+  "author": "yangodev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yangodev/regexp-url-matcher.git/issues"
+  },
+  "homepage": "https://github.com/yangodev/regexp-url-matcher.git"
+}
