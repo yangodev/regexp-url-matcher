@@ -1,10 +1,10 @@
 var pattern = {
 	RE_EXTRACT : /\/?((\{(\w*)\})|\/?(\[(.*)\])|(\w+))(\s*\|\s*(\S*))?/,
 	init : function(str, config){
-		this.delimiter = config.delimiter || '\\/'
+		this.delimiter = config.delimiter || '/'
 		this.analyzed = this.analyze(str)
 
-		var delimiter = this.delimiter
+		var delimiter = this.escape(this.delimiter)
 		var analyzed = this.analyzed
 
 		var anchors = []
@@ -83,7 +83,7 @@ var pattern = {
 			var content = result[index].match(/[^\/]+/g)
 			if (content.length === 1) content = content[0]
 
-			params[indent.anchor] = content
+			params[ident.anchor] = content
 			index++
 		}
 
@@ -105,8 +105,7 @@ var pattern = {
 			if (!anchor){ string.push(part.name); continue; }
 			else if (!params[anchor]){ missing.push(anchor); continue; }
 
-
-			var joined = [].concat(params[anchor]).join(this.unescape(this.delimiter))
+			var joined = [].concat(params[anchor]).join(this.delimiter)
 
 			if (new RegExp(part.regex).test(joined)) {
 				string.push(joined)
@@ -119,10 +118,13 @@ var pattern = {
 			missing : missing,
 			unsufficient : unsufficient
 		}
-		return string.join(this.unescape(this.delimiter))
+
+		return (new RegExp('^' + this.escape(this.delimiter)).test(this.definition)
+		? this.delimiter : '') + string.join(this.delimiter)
+
 	},
-	unescape : function(str){
-		return str.match(/[^(\\\\)]+/g).join('')
+	escape : function(str){
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
 
 }
