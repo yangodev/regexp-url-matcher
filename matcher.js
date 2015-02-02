@@ -1,5 +1,5 @@
 var pattern = {
-	RE_EXTRACT : /\/?((\{(\w*)\})|\/?(\[(.*)\])|(\w+))(\s*\|\s*(\S*))?/,
+	RE_EXTRACT : /\/?((\{(\w*)\})|(\[(.*)\])|(\w+))(\s*\|\s*(\S*))?/,
 	init : function(str, config){
 		this.definition = str
 		this.delimiter = config.delimiter || '/'
@@ -20,7 +20,7 @@ var pattern = {
 		})
 
 		if (regex_str.indexOf(null) > -1) return null
-		else this.regex = new RegExp(regex_str.join(''))
+		else this.regex = new RegExp('^' + regex_str.join('') + '$')
 
 		return this
 	},
@@ -61,7 +61,7 @@ var pattern = {
 			}
 			else {
 				info.name = name
-				info.regex = [self.delimiter, '?', name].join('')
+				info.regex = [begin, name, end].join('')
 			}
 			if (info.anchor){
 				while (idents.indexOf(info.anchor) > -1) { info.anchor = info.anchor + '_' }
@@ -72,33 +72,35 @@ var pattern = {
 		})
 	},
 	match : function(str){
+		str = str.replace(new RegExp('^' + this.escape(this.delimiter) + '$'), '')
 		var result = this.regex.exec(str)
 
 		if (!result) return null
 		else result = result.slice(1)
 
-		var index  = 0
 		var params = {}
+		var index = 0
 
 		for (var i in this.analyzed){
 			var ident = this.analyzed[i]
 			if (!ident.anchor) continue;
 
-			var content = result[index].match(/[^\/]+/g)
+			var content = (result[i].length)
+			? result[i].match(new RegExp('[^'+ this.escape(this.delimiter) + ']+','g'))
+			: result[i]
+
 			if (content.length === 1) content = content[0]
 
 			params[ident.anchor] = content
-			index++
 		}
-
 		return params
 	},
 	reverse : function(params){
 		params = params || {}
 		var analyzed  = this.analyzed
 		var string = []
-		var added = []
 
+		var added = []
 		var missing = []
 		var unsufficient = []
 
